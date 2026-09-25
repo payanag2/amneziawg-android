@@ -175,3 +175,28 @@ jobs:
         name: ${{ steps.cfg.outputs.artifact_name }}
         path: ${{ steps.sign.outputs.final_file || steps.locate.outputs.built_file }}
         if-no-files-found: error
+
+    - name: Publish build to GitHub Release
+      env:
+        GH_TOKEN: ${{ github.token }}
+      shell: bash
+      run: |
+        set -euo pipefail
+
+        FILE="${{ steps.sign.outputs.final_file || steps.locate.outputs.built_file }}"
+        TAG="build-${{ github.run_number }}"
+
+        if gh release view "${TAG}" --repo "${{ github.repository }}" >/dev/null 2>&1; then
+          gh release upload "${TAG}" "${FILE}" --repo "${{ github.repository }}" --clobber
+        elif [[ "${{ inputs.target }}" == "debug_apk" ]]; then
+          gh release create "${TAG}" "${FILE}" \
+            --repo "${{ github.repository }}" \
+            --title "AmneziaWG Payanag2 — Debug build #${{ github.run_number }}" \
+            --notes "Automated debug APK build from ${{ inputs.ref || github.ref_name }}." \
+            --prerelease
+        else
+          gh release create "${TAG}" "${FILE}" \
+            --repo "${{ github.repository }}" \
+            --title "AmneziaWG Payanag2 — ${{ inputs.target }} #${{ github.run_number }}" \
+            --notes "Automated ${{ inputs.target }} build from ${{ inputs.ref || github.ref_name }}."
+        fi
