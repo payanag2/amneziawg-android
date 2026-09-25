@@ -18,6 +18,9 @@ on:
         required: false
         default: "master"
 
+permissions:
+  contents: write
+
 jobs:
   build:
     name: "Build (${{ inputs.target }})"
@@ -115,8 +118,8 @@ jobs:
           FILE="./ui/build/outputs/apk/debug/ui-debug.apk"
         fi
         
-        if [[ -z "${FILE}" ]]; then
-          echo "Built file not found" >&2
+        if [[ ! -f "${FILE}" ]]; then
+          echo "Built file not found: ${FILE}" >&2
           exit 1
         fi
         
