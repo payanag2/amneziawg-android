@@ -247,7 +247,7 @@ class TunnelManager(private val configStore: ConfigStore) : BaseObservable() {
                 val manager = getTunnelManager()
                 if (intent == null) return@launch
                 val action = intent.action ?: return@launch
-                if ("org.amnezia.awg.action.REFRESH_TUNNEL_STATES" == action) {
+                if (ACTION_REFRESH_TUNNEL_STATES == action) {
                     manager.refreshTunnelStates()
                     return@launch
                 }
@@ -255,8 +255,8 @@ class TunnelManager(private val configStore: ConfigStore) : BaseObservable() {
                     return@launch
                 val state: Tunnel.State
                 state = when (action) {
-                    "org.amnezia.awg.action.SET_TUNNEL_UP" -> Tunnel.State.UP
-                    "org.amnezia.awg.action.SET_TUNNEL_DOWN" -> Tunnel.State.DOWN
+                    ACTION_SET_TUNNEL_UP -> Tunnel.State.UP
+                    ACTION_SET_TUNNEL_DOWN -> Tunnel.State.DOWN
                     else -> return@launch
                 }
                 val tunnelName = intent.getStringExtra("tunnel") ?: return@launch
@@ -281,5 +281,11 @@ class TunnelManager(private val configStore: ConfigStore) : BaseObservable() {
 
     companion object {
         private const val TAG = "AmneziaWG/TunnelManager"
+        const val ACTION_REFRESH_TUNNEL_STATES =
+            "com.payanag2.amneziawg.action.REFRESH_TUNNEL_STATES"
+        const val ACTION_SET_TUNNEL_UP =
+            "com.payanag2.amneziawg.action.SET_TUNNEL_UP"
+        const val ACTION_SET_TUNNEL_DOWN =
+            "com.payanag2.amneziawg.action.SET_TUNNEL_DOWN"
     }
 }
